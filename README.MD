@@ -34,20 +34,21 @@ Client app to test API with sample legacy data
 
 Ready-to-run via Docker Compose
 
-📂 Project Structure
-matcher/
-├── api/                 # App with matching logic
-│   ├── matcher.py        # Matching pipeline
-│   ├── views.py          # Django REST views
-│   ├── urls.py
-├── matcher/             # Django project
+## 📂 Project Structure
+
+```bash
+matcher/                     # Project root
+├── api/                     # App with matching logic
+│   ├── matcher.py           # Matching pipeline
+│   └── views.py             # Django REST views
+├── matcher/                 # Django project
 │   ├── settings.py
-│   ├── urls.py
-├── client.py            # Client sending sample request to API
+│   └── urls.py
+├── client.py                # Client sending sample request to API
 ├── requirements.txt
 ├── Dockerfile
 ├── docker-compose.yml
-└── .env                 # Environment variables
+└── .env                     # Environment variables
 
 ⚙ Configuration
 
