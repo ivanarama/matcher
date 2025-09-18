@@ -1,38 +1,29 @@
-🏊 Legacy Sports Facilities Matcher
+# 🏟️ Legacy Sports Facility Matcher
 
-This project provides an API + client for matching legacy sports facility records against live business data using RapidAPI Local Business Data, with fuzzy scoring and geographic validation.
+This project provides an API to **match legacy sports facility records** against live business/location data using **RapidAPI**.  
+It combines **text similarity**, **address matching**, **geolocation**, and **domain-specific fields** (Olympic sports, infrastructure) to determine the best match.
 
-It is containerized with Docker for easy deployment.
+---
 
-✨ Features
+## 🚀 Features
 
-Django REST API endpoint /api/match/
+- Django-based REST API  
+- Candidate search via [Local Business Data API (RapidAPI)](https://rapidapi.com/letscrape-6bRBa3QguO5/api/local-business-data)  
+- Scoring based on:
+  - Facility title  
+  - Address  
+  - Geographic coordinates  
+  - Olympic sports  
+  - Sports infrastructure  
+- Match status:
+  - ✅ `match` – confident match  
+  - ⚠️ `weak_match` – possible but uncertain  
+  - ❓ `ambiguous` – multiple similar candidates  
+  - ❌ `unmatched` – no candidate found  
+- Configurable weights for scoring  
+- Dockerized for easy deployment  
 
-Matches a legacy record (e.g. Olympic sports facilities) to real business data
-
-Uses:
-
-Fuzzy title and address similarity (rapidfuzz)
-
-Geographical distance (geopy)
-
-Olympic sports and infrastructure type matching
-
-Configurable weights for scoring (title, address, geo, olympic, infra)
-
-Status classification:
-
-✅ matched
-
-⚠️ weak_match
-
-❓ ambiguous
-
-❌ unmatched
-
-Client app to test API with sample legacy data
-
-Ready-to-run via Docker Compose
+---
 
 ## 📂 Project Structure
 
@@ -48,95 +39,24 @@ matcher/                     # Project root
 ├── requirements.txt
 ├── Dockerfile
 ├── docker-compose.yml
-└── .env                     # Environment variables```
+└── .env                     # Environment variables
+```
 
-⚙ Configuration
+---
 
-Create a .env file with your credentials:
-
-RAPIDAPI_KEY=your_real_key_here
-DJANGO_SECRET_KEY=changeme123
-
-🚀 Running with Docker
-
-Build and start services:
-
-docker-compose up --build
-
-
-API will run at: http://localhost:8000/api/match/
-
-Client will automatically send a test legacy record and print results in logs
-
-📡 API Usage
-Endpoint
-POST /api/match/
-
-Example Request Body
-{
-  "pagetitle": "Corallia Beach and Coral Beach olympic swimming pool",
-  "City": "Coral Bay",
-  "Country": "Cyprus",
-  "Page in Google maps": "https://www.google.com/maps/place/Corallia+Beach+Hotel+Apartments/@34.8590644,32.3569649,17z",
-  "Full address": "Coral Bay Ave 70, Peyia 8575, Cyprus",
-  "Olympic sports": "Diving (FINA),Swimming (FINA),Synchronized swimming (FINA),Water Polo (FINA)",
-  "Sports infrastructure": "Olympic size pool, Diving tower, Water polo field"
-}
-
-Example Response
-{
-  "status": "matched",
-  "best": {
-    "candidate": {
-      "title": "Corallia Beach Hotel & Swimming Pool",
-      "address": "Coral Bay Ave 70, Peyia, Cyprus",
-      "coords": [34.85906, 32.35954],
-      "type": "Swimming pool"
-    },
-    "scores": {
-      "title_score": 0.95,
-      "address_score": 0.92,
-      "geo_score": 0.99,
-      "olympic_score": 1.0,
-      "infra_score": 0.8,
-      "final_score": 0.94
-    }
-  },
-  "alternatives": [...]
-}
-
-🛠 Development
-
-If you prefer running without Docker:
-
-pip install -r requirements.txt
-python manage.py migrate
-python manage.py runserver
-
-
-Then test with:
-
-python client.py
-
-📜 License
-
-MIT License.
-
-⚖️ Custom Weights
+## ⚖️ Custom Weights
 
 The scoring function supports configurable weights for each component:
 
-title – facility name similarity
+- **title** – facility name similarity  
+- **address** – address similarity  
+- **geo** – geographic distance match  
+- **olympic** – overlap with Olympic sports list  
+- **infra** – overlap with sports infrastructure list  
 
-address – address similarity
+### Default Weights
 
-geo – geographic distance match
-
-olympic – overlap with Olympic sports list
-
-infra – overlap with sports infrastructure list
-
-Default Weights
+```python
 weights = {
   "title": 0.4,
   "address": 0.25,
@@ -144,11 +64,11 @@ weights = {
   "olympic": 0.1,
   "infra": 0.05
 }
+```
 
-Example: Geo-dominant Matching
+### Example: Geo-dominant Matching
 
-If you want to rely more heavily on geolocation (e.g., when addresses are noisy):
-
+```python
 custom_weights = {
   "title": 0.3,
   "address": 0.2,
@@ -156,11 +76,11 @@ custom_weights = {
   "olympic": 0.05,
   "infra": 0.05
 }
+```
 
-How to Use
+### How to Use
 
-Pass weights into the API request:
-
+```json
 {
   "pagetitle": "Corallia Beach and Coral Beach olympic swimming pool",
   "City": "Coral Bay",
@@ -176,6 +96,103 @@ Pass weights into the API request:
     "infra": 0.05
   }
 }
+```
 
+The API will then compute the final score using these weights instead of defaults.  
 
-The API will then compute the final score using these weights instead of defaults.
+---
+
+## 🐳 Running with Docker
+
+1. Clone the repo:
+   ```bash
+   git clone https://github.com/yourname/legacy-sports-matcher.git
+   cd legacy-sports-matcher
+   ```
+
+2. Create `.env` file:
+   ```env
+   RAPIDAPI_KEY=your_rapidapi_key
+   SECRET_KEY=your_django_secret
+   ```
+
+3. Build and run:
+   ```bash
+   docker-compose up --build
+   ```
+
+4. API will be available at:
+   ```bash
+   http://localhost:8000/api/match/
+   ```
+
+---
+
+## 📡 API Usage
+
+### Endpoint
+```http
+POST /api/match/
+```
+
+### Request
+```json
+{
+  "pagetitle": "Corallia Beach Swimming Pool",
+  "City": "Coral Bay",
+  "Country": "Cyprus",
+  "Full address": "Coral Bay Ave 70, Peyia 8575, Cyprus",
+  "Olympic sports": "Swimming (FINA), Synchronized swimming (FINA)",
+  "Sports infrastructure": "Olympic size pool, Diving tower"
+}
+```
+
+### Response
+```json
+{
+  "status": "match",
+  "best": {
+    "candidate": {
+      "title": "Corallia Beach Olympic Pool",
+      "address": "Coral Bay Ave 70, Peyia",
+      "coords": [34.85906, 32.35954]
+    },
+    "scores": {
+      "title_score": 0.95,
+      "address_score": 0.92,
+      "geo_score": 0.98,
+      "olympic_score": 1.0,
+      "infra_score": 0.8,
+      "final_score": 0.95
+    }
+  },
+  "alternatives": [
+    {
+      "candidate": {
+        "title": "Coral Beach Arena",
+        "address": "Paphos, Cyprus"
+      },
+      "scores": {
+        "final_score": 0.62
+      }
+    }
+  ]
+}
+```
+
+---
+
+## 🛠️ Development
+
+Run locally (without Docker):
+
+```bash
+pip install -r requirements.txt
+python manage.py runserver
+```
+
+---
+
+## 📜 License
+
+MIT
