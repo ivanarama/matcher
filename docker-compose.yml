@@ -1,0 +1,22 @@
+version: "3.9"
+
+services:
+  api:
+    build: .
+    container_name: matcher_api
+    env_file: .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    restart: always
+
+  client:
+    build: .
+    container_name: matcher_client
+    env_file: .env
+    command: ["python", "client.py"]
+    depends_on:
+      - api
+    volumes:
+      - .:/app
