@@ -48,7 +48,7 @@ matcher/                     # Project root
 ├── requirements.txt
 ├── Dockerfile
 ├── docker-compose.yml
-└── .env                     # Environment variables
+└── .env                     # Environment variables```
 
 ⚙ Configuration
 
