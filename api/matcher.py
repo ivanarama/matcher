@@ -69,6 +69,7 @@ def extract_coords_from_gmap(url: str):
     return None
 
 def search_candidates(query, location=None, api_key=None):
+    print(query, location)
     url = "https://local-business-data.p.rapidapi.com/search"
     params = {"query": query, "limit": 5}
     if location:
@@ -94,12 +95,14 @@ def match_legacy_record(legacy, api_key, threshold=0.75, gap=0.1, weights=None):
     if not legacy.get("coords") and legacy.get("Page in Google maps"):
         legacy["coords"] = extract_coords_from_gmap(legacy["Page in Google maps"])
 
+    location = f"{legacy.get('City')}, {legacy.get('Country')}" if legacy.get("City") and legacy.get("Country") else None
+
     if legacy.get("Full address"):
         query = f"{legacy['Full address']} {legacy['pagetitle']}"
     else:
-        query = legacy.get("pagetitle")
+        query = location+" "+legacy.get("pagetitle")
 
-    location = f"{legacy.get('City')}, {legacy.get('Country')}" if legacy.get("City") and legacy.get("Country") else None
+    
     candidates = search_candidates(query, location, api_key)
 
     if not candidates:

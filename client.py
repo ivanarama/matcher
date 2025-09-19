@@ -11,5 +11,5 @@ legacy_example = {
     "Sports infrastructure": "Olympic size pool, Diving tower, Water polo field"
 }
 
-resp = requests.post("http://127.0.0.1:8000/api/match/", json=legacy_example)
+resp = requests.post("http://api:8000/api/match/", json=legacy_example)
 print(json.dumps(resp.json(), indent=2, ensure_ascii=False))
